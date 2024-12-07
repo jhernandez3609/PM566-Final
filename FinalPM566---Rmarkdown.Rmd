@@ -1,13 +1,11 @@
 ---
-title: "PM566 - Final"
+title: "FinalPM566"
 author: "Jazmin Hernandez"
 date: "December 6, 2024"
-output:
-  pdf_document:
-    latex_engine: xelatex
-embed-resources: true
-editor: visual
+output: pdf_document
 ---
+
+
 
 ## Introduction
 
