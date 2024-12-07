@@ -1,28 +1,36 @@
 ---
-title: "Data Analysis on Youth Risk Behavior Surveillance System Focused on Obesity According to Race/Ethnicity and Location"
+title: "PM566 Final Report"
 author: "Jazmin Hernandez"
+date: "2024-12-07"
+output: pdf_document
 ---
-
-
 
 ## Introduction
 
-Welcome to my health data science analysis project. I will be working with the dataset Nutrition, Physical Activity, and Obesity, which was acquired from the Centers for Disease Control and Prevention through the Youth Risk Behavior Surveillance System. In this dataset, there is information on high school students in grades 9-12 from public and private schools regarding their diet, physical activity, and weight. This data helps inform the Division of Nutrition, Physical Activity, and Obesity which in turn contributes to national and state data on these markers.
+The dataset Nutrition, Physical Activity, and Obesity, was acquired from the Centers for Disease Control and Prevention through the Youth Risk Behavior Surveillance System. In this dataset, there is information on high school students in grades 9-12 from public and private schools regarding their diet, physical activity, and weight. This data helps inform the Division of Nutrition, Physical Activity, and Obesity which in turn contributes to the  national and state data on these markers.
 
 Current research shows that non-Hispanic Black adults have a higher prevalence of obesity followed by Hispanic adults. Midwestern and Southern regions have a higher prevalence of obesity according to the Centers for Disease Control and Prevention. The goal of this analysis is to analyze if the data collected from high school students through the Youth Risk Behavior Surveillance System shows a trend for obesity according to location and race/ethnicity. For my analysis I will be exploring the following questions:
 
 1)  Does obesity and weight status differ by state?
 2)  Does obesity and weight status differ by ethnicity?
 
+## Methods
 
-For the full report, please follow this [link](https://github.com/jhernandez3609/PM566-Final/blob/main/PM566_rmarkdown.pdf).
+### How and Where the Data were Acquired
 
-To download the dataset used in this analysis, follow this [link](https://github.com/jhernandez3609/PM566-Final/blob/main/dataset%20used%20from%20CDC.csv). 
+The data were acquired from the Youth Risk Behavior Surveillance System where surveys were given to national, state, territorial, tribal, and large urban schools from grades 9-12 in U.S. high schools. Students were randomly selected to participate based on their required classes or a specific period of the school day. I used the API pertaining to the data but had to modify the default limit to allow all 44,702 observations and 31 columns to allow for all data to be analyzed with no limit.
 
+### Missing Values and Filtering Data 
 
-## Data Visualization
+I assessed missing values for the key variables which included:locationdesc, geolocation, data_value, race_ethnicity, class, and question. I then filtered the dataset for only relevant class observations including "Obesity/Weight Status." Because this analysis is focused on obesity/weight pertaining to state and ethnicity, I kept only relevant key variables mentioned above. After missing values were removed, the observations went from 44,702 to 3,028 observations.
 
-To help with data visualization, I separated states into regions pertaining to Northeast, Midwest, South, and West. From here, I was able to create a bar plot with the average data values according to Question 1 (Percent of students in grades 9-12 who have an overweight classification) and Question 2 (Percent of students in grades 9-12 who have obesity) and stratified by region (Figure 5). The results supported Table 1 (shown on report) where the highest values of Question 1 were reported in the Midwest/South regions and the highest values for Question 2 being reported in the same regions. According to this Table 1, states such as Mississippi (19.63%) and Louisiana (18.72%) had higher percentages of students falling into Question 1 and Question 2 categories. As seen in Figure 6, American Indian/Alaska Native students along with Hawaiian/Pacific Islander students have a higher average data value of Question 1 and Question 2.
+### Transformation from Longer to Wider 
+
+To better visualize and compare data, I transformed the variable "question" into a binary variable where 1 = "Percent of students in grades 9-12 who have an overweight classification" and 2 = "Percent of students in grades 9-12 who have obesity." To include more variables rather than observations, I transformed the data from longer to wider. By aggregating the data so that each column had a single data value, I created Question 1 and Question 2 as two separate variables so that each location pertaining to the obesity/weight status has a column for Question 1 and another for Question 2 with their corresponding data values in percentages.
+
+### Exploratory Data Analysis Tools 
+
+For exploratory data analysis, I used ggplots and bar plots to assess individual variables and explore their distribution. In doing this, I assessed the contribution of counts each location and race/ethnicity provided to the overall dataset as well as to Question 1 and 2 individually. Summary statistics were also generated in descending order according to question 1 or 2. The summary statistic tables aided in the comparison of which race/ethnicity and location had the highest means based on question 1 or 2 in the dataset.
 
 
 ```{r include=FALSE}
@@ -142,7 +150,7 @@ rename(
 
 ```
 
-```{r warning=FALSE, include=FALSE, fig.width=10, fig.height=6}
+```{r warning=FALSE, echo=FALSE, fig.width=10, fig.height=6}
 # Exploring individual variables - Question 1
 
 library(tidyr)
@@ -154,7 +162,7 @@ ggplot(datawide, aes(x = locationabbr, y = Question1, fill = "Question1")) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
 ```
 
-```{r warning=FALSE, include=FALSE, fig.width=10, fig.height=6}
+```{r warning=FALSE, echo=FALSE, fig.width=10, fig.height=6}
 # Exploring individual variables - Question 2
 options(warn = -1)
 library(tidyr)
@@ -166,7 +174,7 @@ ggplot(datawide, aes(x = locationabbr, y = Question1, fill = "Question2")) +
     theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-```{r include=FALSE, fig.width=10, fig.height=6}
+```{r echo=FALSE, fig.width=10, fig.height=6}
 # Which states represent a larger sample size in the survey
 library(ggplot2)
 ggplot(data, aes(x = factor(locationabbr))) + 
@@ -175,7 +183,7 @@ ggplot(data, aes(x = factor(locationabbr))) +
   labs(title = "Figure 3: Contribution of counts per State", x = "Location", y = "Data Value (%)") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
-```{r include=FALSE, fig.width=10, fig.height=6}
+```{r echo=FALSE, fig.width=10, fig.height=6}
 # looking at distribution of ethnicity
 ggplot(data, aes(x = factor(race_ethnicity))) + 
   geom_bar() + 
@@ -185,10 +193,16 @@ ggplot(data, aes(x = factor(race_ethnicity))) +
 ```
 
 
+## Results
+
+### Table 1
+
+Table 1 was created to assess the mean data values of Question 1 (Percent of students in grades 9-12 who have an overweight classification) and Question 2 (Percent of students in grades 9-12 who have obesity) according to location. From Table 1, we can see that Guam had the highest percentage of students in grades 9-12 who have obesity (20.33%) followed by Mississippi in the same question category (19.63%). Louisiana had the highest percent of students in grades 9-12 who have an overweight classification (18.72%) followed by Arkansas (18.14%).
 
 
 
-```{r include=FALSE, results='asis'}
+
+```{r echo=FALSE, results='asis'}
 # Summary statistics for location and question
 library(knitr)
 library(kableExtra)
@@ -216,8 +230,14 @@ kable(summary_table,
 
 
 
+### Table 2
 
-```{r include=FALSE, results='asis'}
+To help address the question of whether obesity and weight status differed by ethnicity, Table 2 was created. From this table, we can see that Hawaiian/Pacific Islanders had the highest mean data value for percent of students in grades 9-12 who have obesity (18.05%) followed by the American Indian/Alaska Native community (17.98%). For race/ethnicity with the highest present of students in the overweight classification, Non-Hispanic Black students had the highest mean (18.04%) with Hispanic students following (17.70%).
+
+
+
+
+```{r echo=FALSE, results='asis'}
 # Summary statistics for race/ethnicity and question
 library(knitr)
 library(kableExtra)
@@ -284,14 +304,16 @@ mean(is.na(data$region))
 ```
 
 
+### Confirming Results
+
+To help with data visualization, I separated states into regions pertaining to Northeast, Midwest, South, and West. From here, I was able to create a bar plot with the average data values according to Question 1 and Question 2 stratified by region (Figure 5). The results supported Table 1 where the highest values of Question 1 were reported in the Midwest/South regions and the highest values for Question 2 being reported in the same regions. 
+
+
 
 
 ```{r warning=FALSE, echo=FALSE, fig.width=10, fig.height=6}
 # Bar plot of average data value by region 
-suppressPackageStartupMessages(library(plotly))
-suppressPackageStartupMessages(library(ggplot2))
-
-gg_plot <- ggplot(data, aes(x = region, y = data_value, fill = question)) +
+ggplot(data, aes(x = region, y = data_value, fill = question)) +
   stat_summary(fun = mean, geom = "bar", position = "dodge", width = 0.7) + 
   stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2, 
                position = position_dodge(0.7)) +  # Error bars
@@ -300,24 +322,12 @@ gg_plot <- ggplot(data, aes(x = region, y = data_value, fill = question)) +
        x = "Region", 
        y = "Average Data Value") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-interactive_plot <- ggplotly(gg_plot)
-
-interactive_plot
 ```
 
-
-
-
-
-
-
-
-```{r echo=FALSE}
-library(plotly)
+```{r echo=FALSE, fig.width=10, fig.height=6}
 library(ggplot2)
-
-gg_plot <- ggplot(data, aes(x = race_ethnicity, y = data_value, fill = question)) +
+# Bar plot of average data value by ethnicity
+ggplot(data, aes(x = race_ethnicity, y = data_value, fill = question)) +
   stat_summary(fun = mean, geom = "bar", position = "dodge", width = 0.7) +
   stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2, 
                position = position_dodge(0.7)) +
@@ -325,30 +335,18 @@ gg_plot <- ggplot(data, aes(x = race_ethnicity, y = data_value, fill = question)
   labs(title = "Figure 6: Average Data Value by Race and Question",
        x = "Race/Ethnicity",
        y = "Average Data Value") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-interactive_plot <- ggplotly(gg_plot)
-
-# Adjusting layout for a better aspect ratio
-interactive_plot <- interactive_plot %>%
-  layout(
-    title = "Figure 6: Average Data Value by Race and Question",
-    xaxis = list(title = "Race/Ethnicity"),
-    yaxis = list(title = "Average Data Value"),
-    width = 800,  # Increase width of the plot
-    height = 600, # Adjust height of the plot
-    margin = list(l = 60, r = 60, t = 100, b = 100)  # Adjust margins for better spacing
-  )
-
-interactive_plot
+   theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
 ```
 
 
+### Data Visualization
 
- 
+By creating pie charts of the proportions of ethnicities in each location, I was able to visualize how the ethnicities with higher mean data values related to states with the higher mean data values as seen in Tables 1 and 2. We can see how the locations with higher mean values of Questions 1 and 2 (Guam, Arkansas, Mississippi, and Louisiana) relate to the ethnicities with higher mean values for the corresponding questions. We can see that in states such as Arkansas, Mississippi, and Louisiana there was a larger population of American Indian/Alaska Native and Non-Hispanic Black students with Guam having a greater portion of Hawaiian/Pacific Islander students. This also supports the tables above in distinguishing how obesity/weight status differs by location and ethnicity. 
 
 
-```{r include=FALSE, fig.width=12, fig.height=8}
+
+
+```{r echo=FALSE, fig.width=12, fig.height=8}
 library(ggplot2)
 # Proportions of ethnicities in each location
 ethnicity_proportion <- data |>
@@ -402,6 +400,7 @@ print(state_summary)
 ```
 
 
+### Visualizations
 
 Filtering by Question 1 or 2, maps were created to better visualize mean data values based on location. High mean values are represented by red markers, above median values represented by yellow markers, and low values represented by green markers. From Figure 8, we can see that the state with the highest mean data value for Question 1 is Louisiana (18.72%) which is consistent with our results from Table 1. Figure 9 shows Guam as having the highest mean data value (20.33%) which is also supported by Table 2.
 
@@ -411,7 +410,8 @@ library(leaflet)
 library(shiny)
 library(htmltools)
 library(webshot2)
-# Leaflet map
+
+# Create the Leaflet map
 maps <- leaflet(state_summary) |>
   addProviderTiles('CartoDB.Positron') |>  
   addCircleMarkers(
@@ -439,16 +439,22 @@ maps <- leaflet(state_summary) |>
     title = "Mean Data Value for Question 1 by State"
   )
 
+# Save the map as an HTML file
+htmlwidgets::saveWidget(maps, "map.html")
 
+# Use webshot2 to take a screenshot of the map and save it as a PNG image
+webshot2::webshot("map.html", file = "map_screenshot.png", vwidth = 1000, vheight = 800)
+
+# Caption for the map
 caption <- tags$div(
   style = "text-align: left; font-size: 14px; padding-top: 10px;",  
   "Figure 8: Map Showing Mean Data Value for Question 1 by State."
 )
 
-
+# Display the image in the document
 tagList(
-  caption,  
-  maps  # Add the interactive map
+  caption,  # Add the caption above the map
+  img(src = "map_screenshot.png", width = "100%")  # Add the static map image
 )
 ```
 
@@ -505,20 +511,42 @@ map <- leaflet(state_summary) |>
   )
 
 
-# Create caption for the map with left-aligned text
+
+# Save the map as an HTML file
+htmlwidgets::saveWidget(map, "map.html")
+
+# Use webshot2 to take a screenshot of the map and save it as a PNG image
+webshot2::webshot("map.html", file = "map_screenshot.png", vwidth = 1000, vheight = 800)
+
+# Caption for the map
 caption <- tags$div(
-  style = "text-align: left; font-size: 14px; padding-top: 10px;",  # Left-align the caption
-  "Figure 9: Map Showing Mean Data Value for Question 2 by State."
+  style = "text-align: left; font-size: 14px; padding-top: 10px;",  
+  "Figure 8: Map Showing Mean Data Value for Question 1 by State."
 )
 
+# Display the image in the document
 tagList(
-  caption,  
-  map  # Add the interactive map
+  caption,  # Add the caption above the map
+  img(src = "map_screenshot.png", width = "100%")  # Add the static map image
 )
 ```
+
 
 
 ## Conclusion
 
 After exploratory data analysis and the creation of graphs and tables, obesity/weight status seems to follow a trend in certain race/ethnicities and locations. Higher mean data values of Question 1 and Question 2 are characteristic of the Midwest and South regions as well as ethnicities with a higher population in these areas (Figure 7). Ethnicities with a higher percentage of students falling into the Question 1 category included Non-Hispanic Black students (18.04%) and Hispanic students (17.70%). Students falling into Question 2 category included Hawaiian/Pacific Islanders (18.05%) followed by American Indian/Alaska Native students (17.98%).
+
+However, from exploratory data analysis graphs, race/ethnicity are seen to be disproportionately represented in this dataset (Figure 4). The greatest difference in the student population can be seen in the Hawaiian/Pacific Islander population compared to the Non-Hispanic White population and their data value percentages. This is also true for certain regions as seen in Figure 3. We can see that New York had substantially more students participating in the study compared to those in the Virgin Islands.
+
+Although the data could have used from a more robust sample size focused on equal inclusion, the results presented in this analysis from the data published by the CDC could be a starting point to program development. Such efforts can be streamlined in targeting specific regions and ethnicities presented in the analysis. The Youth Risk Behavior Surveillance System can continue to integrate programs that help diminish the obesity epidemic in adolescents. 
+
+\newpage
+
+## References
+
+Centers for Disease Control and Prevention. (n.d.). Adult obesity prevalence maps. Centers for Disease Control and Prevention. https://www.cdc.gov/obesity/data-and-statistics/adult-obesity-prevalence-maps.html 
+
+Centers for Disease Control and Prevention. (n.d.-b). National YRBSS datasets and documentation by year. Centers for Disease Control and Prevention. https://www.cdc.gov/yrbs/data/national-yrbs-datasets-documentation.html 
+
 
