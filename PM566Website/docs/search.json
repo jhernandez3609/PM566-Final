@@ -1,0 +1,37 @@
+[
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Data Analysis on Youth Risk Behavior Surveillance System Focused on Obesity According to Race/Ethnicity and Location",
+    "section": "",
+    "text": "Welcome to my health data science analysis project. I will be working with the dataset Nutrition, Physical Activity, and Obesity, which was acquired from the Centers for Disease Control and Prevention through the Youth Risk Behavior Surveillance System. In this dataset, there is information on high school students in grades 9-12 from public and private schools regarding their diet, physical activity, and weight. This data helps inform the Division of Nutrition, Physical Activity, and Obesity which in turn contributes to national and state data on these markers.\nCurrent research shows that non-Hispanic Black adults have a higher prevalence of obesity followed by Hispanic adults. Midwestern and Southern regions have a higher prevalence of obesity according to the Centers for Disease Control and Prevention. The goal of this analysis is to analyze if the data collected from high school students through the Youth Risk Behavior Surveillance System shows a trend for obesity according to location and race/ethnicity. For my analysis I will be exploring the following questions:\n\nDoes obesity and weight status differ by state?\nDoes obesity and weight status differ by ethnicity?\n\nFor the full report, please follow this link.\nTo download the dataset used in this analysis, follow this link."
+  },
+  {
+    "objectID": "index.html#introduction",
+    "href": "index.html#introduction",
+    "title": "Data Analysis on Youth Risk Behavior Surveillance System Focused on Obesity According to Race/Ethnicity and Location",
+    "section": "",
+    "text": "Welcome to my health data science analysis project. I will be working with the dataset Nutrition, Physical Activity, and Obesity, which was acquired from the Centers for Disease Control and Prevention through the Youth Risk Behavior Surveillance System. In this dataset, there is information on high school students in grades 9-12 from public and private schools regarding their diet, physical activity, and weight. This data helps inform the Division of Nutrition, Physical Activity, and Obesity which in turn contributes to national and state data on these markers.\nCurrent research shows that non-Hispanic Black adults have a higher prevalence of obesity followed by Hispanic adults. Midwestern and Southern regions have a higher prevalence of obesity according to the Centers for Disease Control and Prevention. The goal of this analysis is to analyze if the data collected from high school students through the Youth Risk Behavior Surveillance System shows a trend for obesity according to location and race/ethnicity. For my analysis I will be exploring the following questions:\n\nDoes obesity and weight status differ by state?\nDoes obesity and weight status differ by ethnicity?\n\nFor the full report, please follow this link.\nTo download the dataset used in this analysis, follow this link."
+  },
+  {
+    "objectID": "index.html#data-visualization",
+    "href": "index.html#data-visualization",
+    "title": "Data Analysis on Youth Risk Behavior Surveillance System Focused on Obesity According to Race/Ethnicity and Location",
+    "section": "Data Visualization",
+    "text": "Data Visualization\nTo help with data visualization, I separated states into regions pertaining to Northeast, Midwest, South, and West. From here, I was able to create a bar plot with the average data values according to Question 1 (Percent of students in grades 9-12 who have an overweight classification) and Question 2 (Percent of students in grades 9-12 who have obesity) and stratified by region (Figure 5). The results supported Table 1 (shown on report) where the highest values of Question 1 were reported in the Midwest/South regions and the highest values for Question 2 being reported in the same regions. According to this Table 1, states such as Mississippi (19.63%) and Louisiana (18.72%) had higher percentages of students falling into Question 1 and Question 2 categories. As seen in Figure 6, American Indian/Alaska Native students along with Hawaiian/Pacific Islander students have a higher average data value of Question 1 and Question 2.\n\n\n\n\n\n\n\n\n\n\n\n\nFiltering by Question 1 or 2, maps were created to better visualize mean data values based on location. High mean values are represented by red markers, above median values represented by yellow markers, and low values represented by green markers. From Figure 8, we can see that the state with the highest mean data value for Question 1 is Louisiana (18.72%) which is consistent with our results from Table 1. Figure 9 shows Guam as having the highest mean data value (20.33%) which is also supported by Table 2.\n\n\nFigure 8: Map Showing Mean Data Value for Question 1 by State.\n\n\n\n\n\n\nFigure 9: Map Showing Mean Data Value for Question 2 by State."
+  },
+  {
+    "objectID": "index.html#conclusion",
+    "href": "index.html#conclusion",
+    "title": "Data Analysis on Youth Risk Behavior Surveillance System Focused on Obesity According to Race/Ethnicity and Location",
+    "section": "Conclusion",
+    "text": "Conclusion\nAfter exploratory data analysis and the creation of graphs and tables, obesity/weight status seems to follow a trend in certain race/ethnicities and locations. Higher mean data values of Question 1 and Question 2 are characteristic of the Midwest and South regions as well as ethnicities with a higher population in these areas (Figure 7). Ethnicities with a higher percentage of students falling into the Question 1 category included Non-Hispanic Black students (18.04%) and Hispanic students (17.70%). Students falling into Question 2 category included Hawaiian/Pacific Islanders (18.05%) followed by American Indian/Alaska Native students (17.98%)."
+  }
+]
