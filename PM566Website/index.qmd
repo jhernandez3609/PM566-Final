@@ -1,0 +1,524 @@
+---
+title: "Data Analysis on Youth Risk Behavior Surveillance System Focused on Obesity According to Race/Ethnicity and Location"
+author: "Jazmin Hernandez"
+---
+
+
+
+## Introduction
+
+Welcome to my health data science analysis project. I will be working with the dataset Nutrition, Physical Activity, and Obesity, which was acquired from the Centers for Disease Control and Prevention through the Youth Risk Behavior Surveillance System. In this dataset, there is information on high school students in grades 9-12 from public and private schools regarding their diet, physical activity, and weight. This data helps inform the Division of Nutrition, Physical Activity, and Obesity which in turn contributes to national and state data on these markers.
+
+Current research shows that non-Hispanic Black adults have a higher prevalence of obesity followed by Hispanic adults. Midwestern and Southern regions have a higher prevalence of obesity according to the Centers for Disease Control and Prevention. The goal of this analysis is to analyze if the data collected from high school students through the Youth Risk Behavior Surveillance System shows a trend for obesity according to location and race/ethnicity. For my analysis I will be exploring the following questions:
+
+1)  Does obesity and weight status differ by state?
+2)  Does obesity and weight status differ by ethnicity?
+
+
+For the full report, please follow this [link](https://github.com/jhernandez3609/PM566-Final/blob/main/PM566%20-%20Final.html).
+
+To download the dataset used in this analysis, follow this [link](https://github.com/jhernandez3609/PM566-Final/blob/main/dataset%20used%20from%20CDC.csv). 
+
+
+## Data Visualization
+
+To help with data visualization, I separated states into regions pertaining to Northeast, Midwest, South, and West. From here, I was able to create a bar plot with the average data values according to Question 1 (Percent of students in grades 9-12 who have an overweight classification) and Question 2 (Percent of students in grades 9-12 who have obesity) and stratified by region (Figure 5). The results supported Table 1 (shown on report) where the highest values of Question 1 were reported in the Midwest/South regions and the highest values for Question 2 being reported in the same regions. According to this Table 1, states such as Mississippi (19.63%) and Louisiana (18.72%) had higher percentages of students falling into Question 1 and Question 2 categories. As seen in Figure 6, American Indian/Alaska Native students along with Hawaiian/Pacific Islander students have a higher average data value of Question 1 and Question 2.
+
+
+```{r include=FALSE}
+library(httr)
+library(readr)
+url <- "https://data.cdc.gov/resource/vba9-s8jp.csv" # API endpoint
+
+all_data <- list()
+limit <- 50000  # Modifying the default limit
+response <- GET(paste0(url, "?$limit=", limit))
+
+csv_content <- content(response, as = "text")
+data <- read_csv(csv_content)
+print(data)
+```
+
+```{r include = FALSE}
+#checking structure of dataset 
+str(data)
+```
+
+```{r include = FALSE}
+# Checking key variables more closely
+mean(is.na(data$locationdesc))
+```
+
+```{r include = FALSE}
+mean(is.na(data$geolocation))
+```
+
+```{r include = FALSE}
+data <- data[!is.na(data$geolocation), ]
+mean(is.na(data$geolocation))
+```
+
+```{r include=FALSE}
+mean(is.na(data$locationabbr))
+```
+
+```{r include = FALSE}
+mean(is.na(data$data_value))
+data <- data[!is.na(data$data_value), ]
+mean(is.na(data$data_value))
+```
+
+```{r include = FALSE}
+mean(is.na(data$race_ethnicity))
+```
+
+```{r include = FALSE}
+data <- data[!is.na(data$race_ethnicity), ]
+# Making sure that NA values were removed
+mean(is.na(data$race_ethnicity))
+```
+
+```{r include = FALSE}
+mean(is.na(data$class))
+```
+
+```{r include = FALSE}
+mean(is.na(data$question))
+```
+
+```{r include = FALSE}
+# Keeping only the variable in question from the Class column
+library(dplyr)
+data <- data |>
+filter(class == "Obesity / Weight Status")
+print(data)
+```
+
+```{r include = FALSE}
+# code the questions as 1 or 2 
+library(dplyr)
+data <- data |>
+  mutate(questions_coded = case_when(
+    question == "Percent of students in grades 9-12 who have an overweight classification" ~ 1,
+    question == "Percent of students in grades 9-12 who have obesity" ~ 2,
+    TRUE ~ NA_real_  
+  ))
+```
+
+```{r include = FALSE}
+# Keeping only key variables 
+library(dplyr)
+data <- data |> 
+select(locationdesc, locationabbr, geolocation, race_ethnicity, class, data_value, question, questions_coded)
+print(data)
+```
+
+```{r include = FALSE}
+# Aggregating data
+data <- data |>
+  group_by(locationdesc, locationabbr, geolocation, class, race_ethnicity, question, questions_coded) |>
+  summarise(data_value = mean(data_value, na.rm = TRUE)) |>
+  ungroup()
+```
+
+```{r include=FALSE}
+# Transformation from longer to wider
+library(tidyr)
+datawide <- data |>
+pivot_wider(
+names_from = questions_coded,
+values_from = data_value
+  )
+```
+
+```{r include=FALSE}
+# Renaming columns
+library(dplyr)
+datawide <- datawide |>
+rename(
+    Question1 = `1`,
+    Question2 = `2`
+  )
+
+```
+
+```{r warning=FALSE, include=FALSE, fig.width=10, fig.height=6}
+# Exploring individual variables - Question 1
+
+library(tidyr)
+library(ggplot2)
+ggplot(datawide, aes(x = locationabbr, y = Question1, fill = "Question1")) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_minimal() +
+  labs(title = "Figure 1: Data Value for Question 1 by Location", x = "Location", y = "Data Value (%)") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+```
+
+```{r warning=FALSE, include=FALSE, fig.width=10, fig.height=6}
+# Exploring individual variables - Question 2
+options(warn = -1)
+library(tidyr)
+library(ggplot2)
+ggplot(datawide, aes(x = locationabbr, y = Question1, fill = "Question2")) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_minimal() +
+  labs(title = "Figure 2: Data Value for Question 2 by Location", x = "Location", y = "Data Value (%)") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r include=FALSE, fig.width=10, fig.height=6}
+# Which states represent a larger sample size in the survey
+library(ggplot2)
+ggplot(data, aes(x = factor(locationabbr))) + 
+  geom_bar(width = 0.5) + 
+  theme_minimal() +
+  labs(title = "Figure 3: Contribution of counts per State", x = "Location", y = "Data Value (%)") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+```{r include=FALSE, fig.width=10, fig.height=6}
+# looking at distribution of ethnicity
+ggplot(data, aes(x = factor(race_ethnicity))) + 
+  geom_bar() + 
+  theme_minimal() +
+  labs(title = "Figure 4: Race/Ethnicity of High School Students that Participated", x = "Location", y = "Data Value (%)") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+
+
+
+```{r include=FALSE, results='asis'}
+# Summary statistics for location and question
+library(knitr)
+library(kableExtra)
+
+# Prepare the summary table
+summary_table <- data |>
+  group_by(locationabbr, questions_coded) |>
+  summarise(
+    Mean = mean(data_value, na.rm = TRUE),
+    Median = median(data_value, na.rm = TRUE),
+    Count = n(),
+    SD = sd(data_value, na.rm = TRUE),
+    .groups = 'drop'  
+  ) |>
+  arrange(desc(Mean))
+
+# Adding the table with caption and styling it
+kable(summary_table, 
+      caption = "Table 1: Summary Statistics for Location and Question", 
+      label = "tab:summary_statistics") |>
+  kable_styling(latex_options = "scale_down")
+
+```
+
+
+
+
+
+```{r include=FALSE, results='asis'}
+# Summary statistics for race/ethnicity and question
+library(knitr)
+library(kableExtra)
+
+# Prepare the summary table
+summary_table <- data |>
+  group_by(race_ethnicity, questions_coded) |>
+  summarise(
+    Mean = mean(data_value, na.rm = TRUE),
+    Median = median(data_value, na.rm = TRUE),
+    Count = n(),
+    SD = sd(data_value, na.rm = TRUE),
+    .groups = 'drop'  
+  ) |>
+  arrange(desc(Mean))
+
+# Adding the table with a caption and styling it
+kable(summary_table, 
+      caption = "Table 2: Summary Statistics for Race/Ethnicity and Question", 
+      label = "tab:race_statistics") |>
+  kable_styling(latex_options = "scale_down")
+```
+
+
+
+
+```{r include = FALSE}
+# Separate state by region to make visualizations clearer
+state_to_region <- data.frame(
+  locationdesc = c(
+    "District of Columbia",  
+    "Connecticut", "Maine", "Massachusetts", "New Hampshire", "New Jersey", 
+    "New York", "Pennsylvania", "Rhode Island", "Vermont",
+    "Illinois", "Indiana", "Iowa", "Kansas", "Michigan", 
+    "Minnesota", "Missouri", "Nebraska", "North Dakota", 
+    "Ohio", "South Dakota", "Wisconsin",
+    "Alabama", "Arkansas", "Delaware", "Florida", "Georgia", 
+    "Kentucky", "Louisiana", "Maryland", "Mississippi", 
+    "North Carolina", "Oklahoma", "Puerto Rico", "South Carolina", "Tennessee", 
+    "Texas", "Virginia", "West Virginia",
+    "Alaska", "Arizona", "California", "Colorado", "Hawaii", 
+    "Idaho", "Montana", "Nevada", "New Mexico", 
+    "Oregon", "Utah", "Washington", "Wyoming",
+    "Virgin Islands",  
+    "Guam"  
+  ),
+  region = c(
+    rep("Northeast", 10),  
+    rep("Midwest", 12),    
+    rep("South", 19),      
+    rep("West", 13)        
+  )
+)
+
+```
+
+```{r include = FALSE}
+data <- merge(data, state_to_region, by = "locationdesc", all.x = TRUE)
+```
+
+```{r include = FALSE}
+# making sure I didn't miss any regions
+mean(is.na(data$region))
+```
+
+
+
+
+```{r warning=FALSE, echo=FALSE, fig.width=10, fig.height=6}
+# Bar plot of average data value by region 
+suppressPackageStartupMessages(library(plotly))
+suppressPackageStartupMessages(library(ggplot2))
+
+gg_plot <- ggplot(data, aes(x = region, y = data_value, fill = question)) +
+  stat_summary(fun = mean, geom = "bar", position = "dodge", width = 0.7) + 
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2, 
+               position = position_dodge(0.7)) +  # Error bars
+  theme_minimal() +
+  labs(title = "Figure 5: Average Data Value by Region and Question",
+       x = "Region", 
+       y = "Average Data Value") + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+interactive_plot <- ggplotly(gg_plot)
+
+interactive_plot
+```
+
+
+
+
+
+
+
+
+```{r echo=FALSE}
+library(plotly)
+library(ggplot2)
+
+gg_plot <- ggplot(data, aes(x = race_ethnicity, y = data_value, fill = question)) +
+  stat_summary(fun = mean, geom = "bar", position = "dodge", width = 0.7) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2, 
+               position = position_dodge(0.7)) +
+  theme_minimal() +
+  labs(title = "Figure 6: Average Data Value by Race and Question",
+       x = "Race/Ethnicity",
+       y = "Average Data Value") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+interactive_plot <- ggplotly(gg_plot)
+
+# Adjusting layout for a better aspect ratio
+interactive_plot <- interactive_plot %>%
+  layout(
+    title = "Figure 6: Average Data Value by Race and Question",
+    xaxis = list(title = "Race/Ethnicity"),
+    yaxis = list(title = "Average Data Value"),
+    width = 800,  # Increase width of the plot
+    height = 600, # Adjust height of the plot
+    margin = list(l = 60, r = 60, t = 100, b = 100)  # Adjust margins for better spacing
+  )
+
+interactive_plot
+```
+
+
+
+ 
+
+
+```{r include=FALSE, fig.width=12, fig.height=8}
+library(ggplot2)
+# Proportions of ethnicities in each location
+ethnicity_proportion <- data |>
+  group_by(locationabbr, race_ethnicity) |>
+  count() |>
+  group_by(locationabbr) |>
+  mutate(proportion = n / sum(n))
+
+# Pie charts
+ggplot(ethnicity_proportion, aes(x = "", y = proportion, fill = race_ethnicity)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar(theta = "y") +  
+  facet_wrap(~ locationabbr) +  
+  theme_minimal() +
+  labs(title = "Figure 7: Proportion of Ethnicities by Location", fill = "Ethnicity") +
+  theme(axis.text.x = element_blank(), axis.title.x = element_blank())
+```
+
+
+
+```{r include=FALSE}
+# Clean geolocation column to separate into longitude and latitude
+data <- data |>
+mutate(geolocation = gsub("[()]", "", geolocation),
+geolocation = gsub("\\n|\\s*,\\s*|\\s+", " ", geolocation),
+geolocation = trimws(geolocation)) |>
+  separate(geolocation, into = c("latitude", "longitude"), sep = " ", fill = "right") |>
+  mutate(across(c(latitude, longitude), as.numeric))
+```
+
+```{r include=FALSE}
+sum(is.na(data$latitude))
+sum(is.na(data$longitude))
+```
+
+```{r include = FALSE}
+# Filter data for question 1 to create a more interpretable visual
+library(dplyr)
+
+state_summary <- data |>
+  filter(questions_coded == 1) |>  
+  group_by(locationdesc) |>  
+  summarise(
+    Mean = mean(data_value, na.rm = TRUE),  
+    .groups = 'drop'
+  ) |> 
+  left_join(data |> select(locationdesc, latitude, longitude), by = "locationdesc")  
+
+# View the result
+print(state_summary)
+```
+
+
+
+Filtering by Question 1 or 2, maps were created to better visualize mean data values based on location. High mean values are represented by red markers, above median values represented by yellow markers, and low values represented by green markers. From Figure 8, we can see that the state with the highest mean data value for Question 1 is Louisiana (18.72%) which is consistent with our results from Table 1. Figure 9 shows Guam as having the highest mean data value (20.33%) which is also supported by Table 2.
+
+
+```{r echo=FALSE, fig.width=6, fig.height=4}
+library(leaflet)
+library(shiny)
+library(htmltools)
+library(webshot2)
+# Leaflet map
+maps <- leaflet(state_summary) |>
+  addProviderTiles('CartoDB.Positron') |>  
+  addCircleMarkers(
+    ~longitude,
+    ~latitude,
+    radius = ~Mean * 0.5,  
+    color = ~case_when(
+      Mean == max(Mean) ~ "red",
+      Mean > median(Mean) ~ "yellow",  
+      TRUE ~ "green"  
+    ),
+    fillOpacity = 0.7,
+    stroke = TRUE,
+    weight = 1,
+    popup = ~sprintf(
+      "<strong>State:</strong> %s<br>
+       <strong>Mean Data Value:</strong> %.2f",
+      locationdesc, Mean
+    )
+  ) |>
+  addLegend(
+    position = "bottomright",
+    colors = c("red", "yellow", "green"),
+    labels = c("Highest Mean", "Above Median", "Lower Values"),
+    title = "Mean Data Value for Question 1 by State"
+  )
+
+
+caption <- tags$div(
+  style = "text-align: left; font-size: 14px; padding-top: 10px;",  
+  "Figure 8: Map Showing Mean Data Value for Question 1 by State."
+)
+
+
+tagList(
+  caption,  
+  maps  # Add the interactive map
+)
+```
+
+
+```{r include= FALSE}
+# Filter data for question 2 to create a more interpretable visual
+library(dplyr)
+
+
+state_summary <- data |>
+  filter(questions_coded == 2) |>  
+  group_by(locationdesc) |> 
+  summarise(
+    Mean = mean(data_value, na.rm = TRUE),
+    .groups = 'drop'  
+  ) |> 
+  left_join(data |> select(locationdesc, latitude, longitude), by = "locationdesc")  
+
+# View the result
+print(state_summary)
+```
+
+```{r echo=FALSE, fig.width=6, fig.height=4}
+library(leaflet)
+library(shiny)
+library(htmltools)
+library(webshot2)
+# Leaflet map
+map <- leaflet(state_summary) |>
+  addProviderTiles('CartoDB.Positron') |>  
+  addCircleMarkers(
+    ~longitude,
+    ~latitude,
+    radius = ~Mean * 0.5,  
+    color = ~case_when(
+      Mean == max(Mean) ~ "red",
+      Mean > median(Mean) ~ "yellow",  
+      TRUE ~ "green"  
+    ),
+    fillOpacity = 0.7,
+    stroke = TRUE,
+    weight = 1,
+    popup = ~sprintf(
+      "<strong>State:</strong> %s<br>
+       <strong>Mean Data Value:</strong> %.2f",
+      locationdesc, Mean
+    )
+  ) |>
+  addLegend(
+    position = "bottomright",
+    colors = c("red", "yellow", "green"),
+    labels = c("Highest Mean", "Above Median", "Lower Values"),
+    title = "Mean Data Value for Question 2"
+  )
+
+
+# Create caption for the map with left-aligned text
+caption <- tags$div(
+  style = "text-align: left; font-size: 14px; padding-top: 10px;",  # Left-align the caption
+  "Figure 9: Map Showing Mean Data Value for Question 2 by State."
+)
+
+tagList(
+  caption,  
+  map  # Add the interactive map
+)
+```
+
+
+## Conclusion
+
+After exploratory data analysis and the creation of graphs and tables, obesity/weight status seems to follow a trend in certain race/ethnicities and locations. Higher mean data values of Question 1 and Question 2 are characteristic of the Midwest and South regions as well as ethnicities with a higher population in these areas (Figure 7). Ethnicities with a higher percentage of students falling into the Question 1 category included Non-Hispanic Black students (18.04%) and Hispanic students (17.70%). Students falling into Question 2 category included Hawaiian/Pacific Islanders (18.05%) followed by American Indian/Alaska Native students (17.98%).
+
