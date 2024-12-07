@@ -4,13 +4,13 @@ author: "Jazmin Hernandez"
 date: "December 6, 2024"
 output:
   pdf_document:
-latex_engine: xelatex
+    latex_engine: xelatex
+    fontsize: 11pt  
+    mainfont: "Times New Roman"  
+    geometry: margin=1in  
+    link-citations: true
+    embed-resources: true
 editor: visual
-fontsize: 11pt  
-mainfont: "Times New Roman"  
-geometry: margin=1in  
-link-citations: true
-embed-resources: true
 ---
 
 ## Introduction
